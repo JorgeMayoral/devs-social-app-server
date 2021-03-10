@@ -39,11 +39,11 @@ const userSchema = new Schema(
   { timestamps: true },
 );
 
-userSchema.methods.matchPassword = async (plaintText) => {
+userSchema.methods.matchPassword = async function (plaintText) {
   return await bcrypt.compare(plaintText, this.password);
 };
 
-userSchema.pre('save', async (next) => {
+userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     next();
   }
