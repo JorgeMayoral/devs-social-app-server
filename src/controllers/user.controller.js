@@ -26,6 +26,8 @@ const register = async (req, res) => {
 
   if (user) {
     req.session.userId = user._id;
+    req.session.username = user.username;
+    req.session.name = user.name;
     res.status(201).json({
       id: user._id,
       username: user.username,
@@ -55,6 +57,8 @@ const login = async (req, res) => {
 
   if (user && (await user.matchPassword(password))) {
     req.session.userId = user._id;
+    req.session.username = user.username;
+    req.session.name = user.name;
     res.status(200).json({
       id: user.id,
       username: user.username,

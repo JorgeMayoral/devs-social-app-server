@@ -8,6 +8,7 @@ const connectDB = require('./config/db');
 
 // Route Imports
 const userRoutes = require('./routes/user.routes');
+const postRoutes = require('./routes/post.routes');
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ app.use(
 
 // Routes
 app.use('/api/v1/user', userRoutes);
+app.use('/api/v1/post', postRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
