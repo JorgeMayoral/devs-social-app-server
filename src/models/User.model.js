@@ -20,19 +20,19 @@ const userSchema = new Schema(
       required: 'Password is required',
     },
     posts: {
-      type: Schema.Types.ObjectId,
+      type: [Schema.Types.ObjectId],
       default: [],
     },
     likes: {
-      type: Schema.Types.ObjectId,
+      type: [Schema.Types.ObjectId],
       default: [],
     },
     followers: {
-      type: Schema.Types.ObjectId,
+      type: [Schema.Types.ObjectId],
       default: [],
     },
     following: {
-      type: Schema.Types.ObjectId,
+      type: [Schema.Types.ObjectId],
       default: [],
     },
   },
