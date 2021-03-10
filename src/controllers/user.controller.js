@@ -1,3 +1,5 @@
+const asyncHandler = require('express-async-handler');
+
 const { User } = require('./../models/User.model');
 
 /**
@@ -6,7 +8,7 @@ const { User } = require('./../models/User.model');
  * @access Public
  * @route POST /api/v1/user
  */
-const register = async (req, res) => {
+const register = asyncHandler(async (req, res) => {
   const { username, name, email, password } = req.body;
 
   const emailExists = await User.findOne({ email });
@@ -42,7 +44,7 @@ const register = async (req, res) => {
     res.status(400);
     throw new Error('Invalid user data');
   }
-};
+});
 
 /**
  * @name Login
@@ -50,7 +52,7 @@ const register = async (req, res) => {
  * @access Public
  * @route POST /api/v1/user/login
  */
-const login = async (req, res) => {
+const login = asyncHandler(async (req, res) => {
   const { username, password } = req.body;
 
   const user = await User.findOne({ username });
@@ -73,7 +75,7 @@ const login = async (req, res) => {
     res.status(401);
     throw new Error('Invalid username or password');
   }
-};
+});
 
 /**
  * @name Get Users
@@ -81,10 +83,10 @@ const login = async (req, res) => {
  * @access Public
  * @route GET /api/v1/user/all
  */
-const getUsers = async (req, res) => {
+const getUsers = asyncHandler(async (req, res) => {
   const users = await User.find({}).select(['-email', '-password']);
   res.status(200).json(users);
-};
+});
 
 /**
  * @name Get User by Id
@@ -92,7 +94,7 @@ const getUsers = async (req, res) => {
  * @access Public
  * @route GET /api/v1/user/:id
  */
-const getUserById = async (req, res) => {
+const getUserById = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id).select([
     '-email',
     '-password',
@@ -104,7 +106,7 @@ const getUserById = async (req, res) => {
     res.status(404);
     throw new Error('ERROR: User not found');
   }
-};
+});
 
 /**
  * @name Follow User
@@ -112,7 +114,7 @@ const getUserById = async (req, res) => {
  * @access Private
  * @route PUT /api/v1/user/:id/follow
  */
-const followUser = async (req, res) => {
+const followUser = asyncHandler(async (req, res) => {
   const userId = req.session.userId;
   const targetId = req.params.id;
 
@@ -145,7 +147,7 @@ const followUser = async (req, res) => {
   await user.save();
 
   res.status(202).json(targetUser);
-};
+});
 
 module.exports = {
   register,

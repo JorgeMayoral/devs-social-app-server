@@ -6,6 +6,9 @@ const cors = require('cors');
 const cookieSession = require('cookie-session');
 const connectDB = require('./config/db');
 
+// Custom Middleware Imports
+const { notFound, errorHandler } = require('./middleware/error.middleware');
+
 // Route Imports
 const userRoutes = require('./routes/user.routes');
 const postRoutes = require('./routes/post.routes');
@@ -46,6 +49,10 @@ app.use('/api/v1/post', postRoutes);
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
+
+// Error Handlers
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server listening in ${NODE_ENV} mode on port ${PORT}...`);

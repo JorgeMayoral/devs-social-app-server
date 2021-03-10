@@ -1,3 +1,5 @@
+const asyncHandler = require('express-async-handler');
+
 const { Post } = require('./../models/Post.model');
 const { User } = require('./../models/User.model');
 
@@ -7,7 +9,7 @@ const { User } = require('./../models/User.model');
  * @access Private
  * @route POST /api/v1/post
  */
-const createPost = async (req, res) => {
+const createPost = asyncHandler(async (req, res) => {
   const { userId, username, name } = req.session;
 
   if (!userId) {
@@ -30,17 +32,18 @@ const createPost = async (req, res) => {
     await user.save();
     res.status(201).json(post);
   }
-};
+});
+
 /**
  * @name Get Posts
  * @description Get all posts
  * @access Public
  * @route GET /api/v1/post/all
  */
-const getPosts = async (req, res) => {
+const getPosts = asyncHandler(async (req, res) => {
   const posts = await Post.find({});
   res.status(200).json(posts);
-};
+});
 
 /**
  * @name Get Post by Id
@@ -48,7 +51,7 @@ const getPosts = async (req, res) => {
  * @access Public
  * @route GET /api/v1/post/:id
  */
-const getPostById = async (req, res) => {
+const getPostById = asyncHandler(async (req, res) => {
   const post = await Post.findById(req.params.id);
 
   if (post) {
@@ -57,7 +60,7 @@ const getPostById = async (req, res) => {
     res.status(404);
     throw new Error('ERROR: Post not found');
   }
-};
+});
 
 /**
  * @name Like Post
@@ -65,7 +68,7 @@ const getPostById = async (req, res) => {
  * @access Private
  * @route PUT /api/v1/post/:id/like
  */
-const likePost = async (req, res) => {
+const likePost = asyncHandler(async (req, res) => {
   const userId = req.session.userId;
   const postId = req.params.id;
 
@@ -96,6 +99,6 @@ const likePost = async (req, res) => {
   await user.save();
 
   res.status(202).json(post);
-};
+});
 
 module.exports = { createPost, getPosts, getPostById, likePost };
