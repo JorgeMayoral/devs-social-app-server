@@ -71,7 +71,40 @@ const login = async (req, res) => {
   }
 };
 
+/**
+ * @name Get Users
+ * @description Get all users without email and password
+ * @access Public
+ * @route GET /api/v1/user/all
+ */
+const getUsers = async (req, res) => {
+  const users = await User.find({}).select(['-email', '-password']);
+  res.status(200).json(users);
+};
+
+/**
+ * @name Get User by Id
+ * @description Get user by Id without email and password
+ * @access Public
+ * @route GET /api/v1/user/:id
+ */
+const getUserById = async (req, res) => {
+  const user = await User.findById(req.params.id).select([
+    '-email',
+    '-password',
+  ]);
+
+  if (user) {
+    res.status(200).json(user);
+  } else {
+    res.status(404);
+    throw new Error('ERROR: User not found');
+  }
+};
+
 module.exports = {
   register,
   login,
+  getUsers,
+  getUserById,
 };
