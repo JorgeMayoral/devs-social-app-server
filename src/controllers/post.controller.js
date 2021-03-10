@@ -31,5 +31,32 @@ const createPost = async (req, res) => {
     res.status(201).json(post);
   }
 };
+/**
+ * @name Get Posts
+ * @description Get all posts
+ * @access Public
+ * @route GET /api/v1/post/all
+ */
+const getPosts = async (req, res) => {
+  const posts = await Post.find({});
+  res.status(200).json(posts);
+};
 
-module.exports = { createPost };
+/**
+ * @name Get Post by Id
+ * @description Get a Post by Id
+ * @access Public
+ * @route GET /api/v1/post/:id
+ */
+const getPostById = async (req, res) => {
+  const post = await Post.findById(req.params.id);
+
+  if (post) {
+    res.status(200).json(post);
+  } else {
+    res.status(404);
+    throw new Error('ERROR: Post not found');
+  }
+};
+
+module.exports = { createPost, getPosts, getPostById };
