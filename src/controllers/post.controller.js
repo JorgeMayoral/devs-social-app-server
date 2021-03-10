@@ -59,4 +59,43 @@ const getPostById = async (req, res) => {
   }
 };
 
-module.exports = { createPost, getPosts, getPostById };
+/**
+ * @name Like Post
+ * @description Give a like to a post / Remove it if it's already liked
+ * @access Private
+ * @route PUT /api/v1/post/:id/like
+ */
+const likePost = async (req, res) => {
+  const userId = req.session.userId;
+  const postId = req.params.id;
+
+  const user = await User.findById(userId);
+  const post = await Post.findById(postId);
+
+  if (!user) {
+    res.status(401);
+    throw new Error('ERROR: Unauthorized');
+  }
+
+  if (!post) {
+    res.status(404);
+    throw new Error('ERROR: Post not found');
+  }
+
+  if (post.likes.includes(userId) || user.likes.includes(postId)) {
+    post.likes = post.likes.filter((l) => l != userId);
+    user.likes = user.likes.filter((l) => l != postId);
+  } else {
+    post.likes = [user._id, ...post.likes];
+    user.likes = [post._id, ...user.likes];
+  }
+
+  post.totalLikes = post.likes.length;
+
+  await post.save();
+  await user.save();
+
+  res.status(202).json(post);
+};
+
+module.exports = { createPost, getPosts, getPostById, likePost };
