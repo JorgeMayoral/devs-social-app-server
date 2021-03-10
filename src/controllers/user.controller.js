@@ -106,9 +106,51 @@ const getUserById = async (req, res) => {
   }
 };
 
+/**
+ * @name Follow User
+ * @description Follow a user / Unfollow if it is already followed
+ * @access Private
+ * @route PUT /api/v1/user/:id/follow
+ */
+const followUser = async (req, res) => {
+  const userId = req.session.userId;
+  const targetId = req.params.id;
+
+  if (!userId) {
+    res.status(401);
+    throw new Error('ERROR: Unauthorized');
+  }
+
+  const targetUser = await User.findById(targetId);
+
+  if (!targetUser) {
+    res.status(404);
+    throw new Error('ERROR: User not found');
+  }
+
+  const user = await User.findById(userId);
+
+  if (
+    targetUser.followers.includes(userId) ||
+    user.following.includes(targetId)
+  ) {
+    targetUser.followers = targetUser.followers.filter((f) => f != userId);
+    user.following = user.following.filter((f) => f != targetId);
+  } else {
+    targetUser.followers = [userId, ...targetUser.followers];
+    user.following = [targetId, ...user.following];
+  }
+
+  await targetUser.save();
+  await user.save();
+
+  res.status(202).json(targetUser);
+};
+
 module.exports = {
   register,
   login,
   getUsers,
   getUserById,
+  followUser,
 };
