@@ -101,4 +101,65 @@ const likePost = asyncHandler(async (req, res) => {
   res.status(202).json(post);
 });
 
-module.exports = { createPost, getPosts, getPostById, likePost };
+/**
+ * @name Update Post
+ * @description Update logged user post
+ * @access Private
+ * @route PUT /api/v1/post/:id
+ */
+const updatePost = asyncHandler(async (req, res) => {
+  const userId = req.session.userId;
+  const post = await Post.findById(req.params.id);
+  const { body } = req.body;
+
+  if (!post) {
+    res.status(404);
+    throw new Error('ERROR: Post not found');
+  }
+
+  if (!userId || post.authorId != userId) {
+    res.status(401);
+    throw new Error('ERROR: Unauthorized');
+  } else {
+    post.body = post.body !== body ? body : post.body;
+  }
+
+  post.save();
+  res.status(200).json({ post });
+});
+
+/**
+ * @name Delete Post
+ * @description Delete logged user post
+ * @access Private
+ * @route DELETE /api/v1/post/:id
+ */
+const deletePost = asyncHandler(async (req, res) => {
+  const userId = req.session.userId;
+  const post = await Post.findById(req.params.id);
+
+  if (!post) {
+    res.status(404);
+    throw new Error('ERROR: Post not found');
+  }
+
+  if (!userId || post.authorId != userId) {
+    res.status(401);
+    throw new Error('ERROR: Unauthorized');
+  } else {
+    const user = await User.findById(post.authorId);
+    user.posts = user.posts.filter((p) => p != post._id);
+    user.save();
+    post.delete();
+    res.status(200).json({ message: 'Post deleted' });
+  }
+});
+
+module.exports = {
+  createPost,
+  getPosts,
+  getPostById,
+  likePost,
+  updatePost,
+  deletePost,
+};
