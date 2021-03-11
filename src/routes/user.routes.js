@@ -7,6 +7,8 @@ const {
   getUsers,
   getUserById,
   followUser,
+  updateUser,
+  deleteUser,
 } = require('./../controllers/user.controller');
 
 const router = Router();
@@ -14,7 +16,7 @@ const router = Router();
 // Routes
 router.route('/login').post(login);
 router.route('/all').get(getUsers);
-router.route('/:id').get(getUserById);
+router.route('/:id').get(getUserById).put(updateUser).delete(deleteUser);
 router.route('/:id/follow').put(followUser);
 router.route('/').post(register);
 

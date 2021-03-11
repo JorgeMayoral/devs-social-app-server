@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 
 const { User } = require('./../models/User.model');
+const { Post } = require('./../models/Post.model');
 
 /**
  * @name Register
@@ -149,10 +150,90 @@ const followUser = asyncHandler(async (req, res) => {
   res.status(202).json(targetUser);
 });
 
+/**
+ * @name Update User
+ * @description Update logged User
+ * @access Private
+ * @route PUT /api/v1/user/:id
+ */
+const updateUser = asyncHandler(async (req, res) => {
+  const userId = req.session.userId;
+  const user = await User.findById(req.params.id);
+  const { username, name, email, password } = req.body;
+
+  if (!user) {
+    res.status(404);
+    throw new Error('ERROR: User not found');
+  }
+
+  const emailExists = await User.findOne({ email });
+  const usernameExists = await User.findOne({ username });
+
+  if (
+    (user.username !== username && usernameExists) ||
+    (user.email !== email && emailExists)
+  ) {
+    res.status(400);
+    throw new Error('ERROR: Username or email already taken');
+  }
+
+  if (!userId || user._id != userId) {
+    res.status(401);
+    throw new Error('ERROR: Unauthorized');
+  } else {
+    user.username = user.username !== username ? username : user.username;
+    user.name = user.name !== name ? name : user.name;
+    user.email = user.email !== email ? email : user.email;
+    user.password = user.password !== password ? password : user.password;
+  }
+
+  user.save();
+  res.status(200).json({
+    id: user._id,
+    username: user.username,
+    name: user.name,
+    email: user.email,
+    posts: user.posts,
+    likes: user.likes,
+    followers: user.followers,
+    following: user.following,
+  });
+});
+
+/**
+ * @name Delete User
+ * @description Delete logged user
+ * @access Private
+ * @route DELETE /api/v1/user/:id
+ */
+const deleteUser = asyncHandler(async (req, res) => {
+  const userId = req.session.userId;
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    res.status(404);
+    throw new Error('ERROR: User not found');
+  }
+
+  if (!userId || user._id != userId) {
+    res.status(401);
+    throw new Error('ERROR: Unauthorized');
+  } else {
+    const userPosts = user.posts;
+    await user.remove();
+    for (let post of userPosts) {
+      await Post.findByIdAndDelete(post._id);
+    }
+    res.status(200).json({ message: 'User deleted' });
+  }
+});
+
 module.exports = {
   register,
   login,
   getUsers,
   getUserById,
   followUser,
+  updateUser,
+  deleteUser,
 };

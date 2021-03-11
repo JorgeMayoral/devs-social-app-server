@@ -4,6 +4,8 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
 const cookieSession = require('cookie-session');
+
+// Database Configuration Import
 const connectDB = require('./config/db');
 
 // Custom Middleware Imports
@@ -23,6 +25,7 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 const MONGO_URI = process.env.MONGO_URI;
 const COOKIES_SECRET_KEY = process.env.COOKIES_SECRET_KEY;
 
+// Database Connection
 connectDB(MONGO_URI);
 
 // Middleware
