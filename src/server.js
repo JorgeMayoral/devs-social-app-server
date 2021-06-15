@@ -22,7 +22,8 @@ const app = express();
 //Environment Variables
 const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI =
+  NODE_ENV === 'test' ? process.env.MONGO_URI_TEST : process.env.MONGO_URI;
 const COOKIES_SECRET_KEY = process.env.COOKIES_SECRET_KEY;
 
 // Database Connection
@@ -31,7 +32,13 @@ connectDB(MONGO_URI);
 // Middleware
 app.use(express.json());
 app.use(helmet());
-app.use(morgan('combined'));
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(morgan('combined'));
+} else if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
 app.use(cors());
 app.use(
   cookieSession({
@@ -57,6 +64,8 @@ app.get('/', (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server listening in ${NODE_ENV} mode on port ${PORT}...`);
 });
+
+module.exports = { app, server };
