@@ -228,6 +228,39 @@ const deleteUser = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * @name Me
+ * @description Return information about the current logged user
+ * @access Private
+ * @route GET /api/v1/user/me
+ */
+const me = asyncHandler(async (req, res) => {
+  const userId = req.session.userId;
+
+  if (!userId) {
+    res.status(401);
+    throw new Error('ERROR: Unauthorized');
+  }
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    res.status(404);
+    throw new Error('ERROR: User not found');
+  }
+
+  res.status(200).json({
+    id: user._id,
+    username: user.username,
+    name: user.name,
+    email: user.email,
+    posts: user.posts,
+    likes: user.likes,
+    followers: user.followers,
+    following: user.following,
+  });
+});
+
 module.exports = {
   register,
   login,
@@ -236,4 +269,5 @@ module.exports = {
   followUser,
   updateUser,
   deleteUser,
+  me,
 };
