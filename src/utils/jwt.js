@@ -23,7 +23,7 @@ function validateToken(token) {
   try {
     data = jwt.verify(token, secret);
   } catch (err) {
-    data = { error: err };
+    throw new Error('Token verification failed');
   }
 
   return data;

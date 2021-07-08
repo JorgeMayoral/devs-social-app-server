@@ -29,9 +29,10 @@ describe('validateToken', () => {
     expect(decoded.username).toBe(data.username);
   });
 
-  test('return error when the token is not valid', () => {
+  test('throw error when the token is not valid', () => {
     const token = 'invalidToken';
-    const decoded = validateToken(token);
-    expect(decoded).toHaveProperty('error');
+    expect(() => {
+      validateToken(token);
+    }).toThrow('Token verification failed');
   });
 });
