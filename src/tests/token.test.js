@@ -11,10 +11,9 @@ describe('generateToken', () => {
   });
 
   test('return a valid token when user data is provided', () => {
-    const token = generateToken(1, 'testUser');
+    const token = generateToken(1);
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     expect(decoded).toHaveProperty('id');
-    expect(decoded).toHaveProperty('username');
     expect(decoded).toHaveProperty('iat');
     expect(decoded).toHaveProperty('exp');
   });
@@ -22,11 +21,10 @@ describe('generateToken', () => {
 
 describe('validateToken', () => {
   test('return user data when the token is valid', () => {
-    const data = { id: 1, username: 'testUser' };
-    const token = generateToken(data.id, data.username);
+    const data = { id: 1 };
+    const token = generateToken(data.id);
     const decoded = validateToken(token);
     expect(decoded.id).toBe(data.id);
-    expect(decoded.username).toBe(data.username);
   });
 
   test('throw error when the token is not valid', () => {

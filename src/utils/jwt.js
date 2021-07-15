@@ -1,8 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-function generateToken(id, username) {
-  console.log(id, username);
-  if (id === undefined || username === undefined) {
+function generateToken(id) {
+  if (id === undefined) {
     return null;
   }
 
@@ -10,7 +9,6 @@ function generateToken(id, username) {
   const expirationDate = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 365; // Token expires in 1 year
   const payload = {
     id: id,
-    username: username,
     exp: expirationDate,
   };
   const token = jwt.sign(payload, secret);
