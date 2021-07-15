@@ -43,6 +43,15 @@ userSchema.methods.matchPassword = async function (plaintText) {
   return await bcrypt.compare(plaintText, this.password);
 };
 
+userSchema.methods.renameId = function () {
+  let user = this.toObject();
+
+  user.id = user._id;
+  delete user._id;
+
+  return user;
+};
+
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     next();
