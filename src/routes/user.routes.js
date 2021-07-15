@@ -9,17 +9,22 @@ const {
   followUser,
   updateUser,
   deleteUser,
-  me,
+  getProfile,
 } = require('./../controllers/user.controller');
+
+// Middleware
+const { protect } = require('./../middleware/auth.middleware');
 
 const router = Router();
 
 // Routes
 router.route('/login').post(login);
 router.route('/all').get(getUsers);
-router.route('/me').get(me);
-router.route('/:id').get(getUserById).put(updateUser).delete(deleteUser);
-router.route('/:id/follow').put(followUser);
+router.route('/profile').get(protect, getProfile);
+router.route('/update').put(protect, updateUser);
+router.route('/delete').delete(protect, deleteUser);
+router.route('/:id').get(getUserById);
+router.route('/:id/follow').put(protect, followUser);
 router.route('/').post(register);
 
 module.exports = router;

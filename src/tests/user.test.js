@@ -1,15 +1,18 @@
 const mongoose = require('mongoose');
-const { server } = require('../server');
 const { User } = require('../models/User.model');
+const { initialUsers } = require('../tests/helpers');
+
 const {
-  api,
-  initialUsers,
-  getAllUsernamesFromUsers,
-} = require('../tests/helpers');
+  registration,
+  loginUser,
+  findAllUsers,
+  findUserById,
+  follow,
+  update,
+  remove,
+} = require('./../services/user.service');
 
 beforeEach(async () => {
-  await User.deleteMany({});
-
   const user1 = new User(initialUsers[0]);
   await user1.save();
 
@@ -17,56 +20,99 @@ beforeEach(async () => {
   await user2.save();
 });
 
+afterEach(async () => {
+  await User.deleteMany({});
+});
+
 describe('users', () => {
-  test('are returned as json', async () => {
-    await api
-      .get('/api/v1/user/all')
-      .expect(200)
-      .expect('Content-Type', /application\/json/);
+  test('can be registered with valid data', async () => {
+    const username = 'test1';
+    const name = 'Test 1';
+    const email = 'test1@email.com';
+    const password = '123456';
+
+    const user = await registration(username, name, email, password);
+
+    expect(user.username).toBe(username);
   });
 
-  test(`there are ${initialUsers.length} users`, async () => {
-    const response = await api.get('/api/v1/user/all');
-    expect(response.body).toHaveLength(initialUsers.length);
+  test('registration return error with existing user data', async () => {
+    const { username, name, email, password } = initialUsers[0];
+    const data = await registration(username, name, email, password);
+
+    expect(data).toHaveProperty('error');
   });
 
-  test('should return user with username example1', async () => {
-    const usernames = await getAllUsernamesFromUsers();
-    expect(usernames).toContain('example1');
+  test('can login with valid credentials', async () => {
+    const userToLogIn = initialUsers[0];
+
+    const user = await loginUser(userToLogIn.username, userToLogIn.password);
+
+    expect(user).toHaveProperty('name', userToLogIn.name);
   });
 
-  test('a valid user can be registered', async () => {
-    const newUser = {
-      username: 'example3',
-      name: 'User Example 3',
-      email: 'example3@example.com',
-      password: 'test1234',
-    };
+  test('login return error with invalid credentials', async () => {
+    const data = await loginUser('notExists', 'wrongPassword');
 
-    await api
-      .post('/api/v1/user')
-      .send(newUser)
-      .expect(201)
-      .expect('Content-Type', /application\/json/);
-
-    const usernames = await getAllUsernamesFromUsers();
-    expect(usernames).toContain('example3');
+    expect(data).toHaveProperty('error');
   });
 
-  test('a user without username can not be registered', async () => {
-    const newUser = {
-      name: 'User Example 3',
-      email: 'example3@example.com',
-      password: 'test1234',
-    };
+  test('can be get without returning email and password', async () => {
+    const users = await findAllUsers();
 
-    await api.post('/api/v1/user').send(newUser).expect(500);
-    const response = await api.get('/api/v1/user/all');
-    expect(response.body).toHaveLength(initialUsers.length);
+    expect(users[0]).toHaveProperty('username');
+    expect(users[0]).not.toHaveProperty('email');
+    expect(users[0]).not.toHaveProperty('password');
+  });
+
+  test('can be find by their ID', async () => {
+    const users = await findAllUsers();
+
+    const userFoundWithId = await findUserById(users[0].id);
+
+    expect(userFoundWithId).toEqual(users[0]);
+  });
+
+  test('can follow existing users', async () => {
+    const users = await findAllUsers();
+    const userFollower = users[0];
+    const userToFollow = users[1];
+
+    const data = await follow(userFollower.id, userToFollow.id);
+
+    expect(data.followers).toContainEqual(userFollower.id);
+  });
+
+  test('can update their name and email', async () => {
+    const users = await findAllUsers();
+    const userToUpdate = users[0];
+    const newName = 'Updated 1';
+    const newEmail = 'updated1@email.com';
+
+    const user = await update(userToUpdate.id, {
+      name: newName,
+      email: newEmail,
+    });
+
+    expect(user).toHaveProperty('id', userToUpdate.id);
+    expect(user).toHaveProperty('name', newName);
+    expect(user).toHaveProperty('email', newEmail);
+  });
+
+  test('can delete their account', async () => {
+    let users = await findAllUsers();
+    const lengthBeforeDelete = users.length;
+
+    const userToDelete = users[0];
+    await remove(userToDelete.id);
+
+    users = await findAllUsers();
+    const lengthAfterDelete = users.length;
+
+    expect(lengthAfterDelete).toBe(lengthBeforeDelete - 1);
   });
 });
 
 afterAll(() => {
   mongoose.connection.close();
-  server.close();
 });
