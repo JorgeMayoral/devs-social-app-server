@@ -9,6 +9,7 @@ const postSchema = new Schema(
     authorId: {
       type: Schema.Types.ObjectId,
       required: 'Author is required',
+      ref: 'User',
     },
     authorName: {
       type: String,
@@ -21,6 +22,7 @@ const postSchema = new Schema(
     likes: {
       type: [Schema.Types.ObjectId],
       default: [],
+      ref: 'User',
     },
     totalLikes: {
       type: Number,
@@ -33,6 +35,7 @@ const postSchema = new Schema(
     comments: {
       type: [Schema.Types.ObjectId],
       default: [],
+      ref: 'Post',
     },
   },
   { timestamps: true },

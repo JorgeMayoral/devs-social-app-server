@@ -23,17 +23,20 @@ const userSchema = new Schema(
       type: [Schema.Types.ObjectId],
       default: [],
     },
-    likes: {
+    likedPosts: {
       type: [Schema.Types.ObjectId],
       default: [],
+      ref: 'Post',
     },
     followers: {
       type: [Schema.Types.ObjectId],
       default: [],
+      ref: 'User',
     },
     following: {
       type: [Schema.Types.ObjectId],
       default: [],
+      ref: 'User',
     },
   },
   { timestamps: true },
