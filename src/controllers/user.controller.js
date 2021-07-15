@@ -1,8 +1,5 @@
 const asyncHandler = require('express-async-handler');
 
-const { User } = require('./../models/User.model');
-const { Post } = require('./../models/Post.model');
-
 const {
   registration,
   loginUser,
