@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { server } = require('../server');
 const { User } = require('../models/User.model');
 const { initialUsers } = require('../tests/helpers');
 
@@ -115,4 +116,5 @@ describe('users', () => {
 
 afterAll(() => {
   mongoose.connection.close();
+  server.close();
 });

@@ -13,4 +13,4 @@ const initialUsers = [
   },
 ];
 
-module.exports = { api, initialUsers, getAllUsernamesFromUsers };
+module.exports = { initialUsers };
