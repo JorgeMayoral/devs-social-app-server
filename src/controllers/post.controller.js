@@ -1,4 +1,12 @@
 const asyncHandler = require('express-async-handler');
+const {
+  addPost,
+  findPostById,
+  like,
+  getAllPosts,
+  update,
+  remove,
+} = require('../services/post.service');
 
 const { Post } = require('./../models/Post.model');
 const { User } = require('./../models/User.model');
@@ -10,28 +18,29 @@ const { User } = require('./../models/User.model');
  * @route POST /api/v1/post
  */
 const createPost = asyncHandler(async (req, res) => {
-  const { userId, username, name } = req.session;
+  const userId = req.user._id;
 
   if (!userId) {
     res.status(401);
-    throw new Error('ERROR: Unauthorized');
+    throw new Error('Unauthorized');
   }
 
-  const newPost = {
-    body: req.body.body,
-    authorId: userId,
-    authorUsername: username,
-    authorName: name,
-  };
+  const postBody = req.body.body;
 
-  const post = await Post.create(newPost);
-
-  if (post) {
-    const user = await User.findById(post.authorId);
-    user.posts = [post._id, ...user.posts];
-    await user.save();
-    res.status(201).json(post);
+  if (!postBody) {
+    res.status(400);
+    throw new Error('Invalid post data');
   }
+
+  const response = await addPost(userId, postBody);
+
+  if (response.error) {
+    res.status(400);
+    throw new Error(response.error);
+  }
+
+  res.status(200);
+  res.json(response);
 });
 
 /**
@@ -41,8 +50,9 @@ const createPost = asyncHandler(async (req, res) => {
  * @route GET /api/v1/post/all
  */
 const getPosts = asyncHandler(async (req, res) => {
-  const posts = await Post.find({});
-  res.status(200).json(posts);
+  const posts = await getAllPosts();
+  res.status(200);
+  res.json(posts);
 });
 
 /**
@@ -52,14 +62,22 @@ const getPosts = asyncHandler(async (req, res) => {
  * @route GET /api/v1/post/:id
  */
 const getPostById = asyncHandler(async (req, res) => {
-  const post = await Post.findById(req.params.id);
+  const postId = req.params.id;
 
-  if (post) {
-    res.status(200).json(post);
-  } else {
-    res.status(404);
-    throw new Error('ERROR: Post not found');
+  if (!postId) {
+    res.status(400);
+    throw new Error('Post ID missing');
   }
+
+  const response = await findPostById(postId);
+
+  if (response.error) {
+    res.status(404);
+    throw new Error(response.error);
+  }
+
+  res.status(200);
+  res.json(response);
 });
 
 /**
@@ -69,36 +87,23 @@ const getPostById = asyncHandler(async (req, res) => {
  * @route PUT /api/v1/post/:id/like
  */
 const likePost = asyncHandler(async (req, res) => {
-  const userId = req.session.userId;
+  const userId = req.user._id;
   const postId = req.params.id;
 
-  const user = await User.findById(userId);
-  const post = await Post.findById(postId);
-
-  if (!user) {
+  if (!userId) {
     res.status(401);
-    throw new Error('ERROR: Unauthorized');
+    throw new Error('Unauthorized');
   }
 
-  if (!post) {
-    res.status(404);
-    throw new Error('ERROR: Post not found');
+  if (!postId) {
+    res.status(400);
+    throw new Error('Pist ID missing');
   }
 
-  if (post.likes.includes(userId) || user.likes.includes(postId)) {
-    post.likes = post.likes.filter((l) => l != userId);
-    user.likes = user.likes.filter((l) => l != postId);
-  } else {
-    post.likes = [user._id, ...post.likes];
-    user.likes = [post._id, ...user.likes];
-  }
+  const post = await like(userId, postId);
 
-  post.totalLikes = post.likes.length;
-
-  await post.save();
-  await user.save();
-
-  res.status(202).json(post);
+  res.status(202);
+  res.json(post);
 });
 
 /**
@@ -108,24 +113,34 @@ const likePost = asyncHandler(async (req, res) => {
  * @route PUT /api/v1/post/:id
  */
 const updatePost = asyncHandler(async (req, res) => {
-  const userId = req.session.userId;
-  const post = await Post.findById(req.params.id);
-  const { body } = req.body;
+  const userId = req.user._id;
+  const postId = req.params.id;
+  const postBody = req.body.body;
 
-  if (!post) {
-    res.status(404);
-    throw new Error('ERROR: Post not found');
-  }
-
-  if (!userId || post.authorId != userId) {
+  if (!userId) {
     res.status(401);
-    throw new Error('ERROR: Unauthorized');
-  } else {
-    post.body = post.body !== body ? body : post.body;
+    throw new Error('Unauthorized');
   }
 
-  post.save();
-  res.status(200).json({ post });
+  if (!postId) {
+    res.status(400);
+    throw new Error('Post ID missing');
+  }
+
+  if (!postBody) {
+    res.status(400);
+    throw new Error('post body missing');
+  }
+
+  const response = await update(postId, postBody, userId);
+
+  if (response.error) {
+    res.status(400);
+    throw new Error(response.error);
+  }
+
+  res.status(200);
+  res.json(response);
 });
 
 /**
@@ -135,24 +150,27 @@ const updatePost = asyncHandler(async (req, res) => {
  * @route DELETE /api/v1/post/:id
  */
 const deletePost = asyncHandler(async (req, res) => {
-  const userId = req.session.userId;
-  const post = await Post.findById(req.params.id);
+  const userId = req.user._id;
+  const postId = req.params.id;
 
-  if (!post) {
-    res.status(404);
-    throw new Error('ERROR: Post not found');
-  }
-
-  if (!userId || post.authorId != userId) {
+  if (!userId) {
     res.status(401);
-    throw new Error('ERROR: Unauthorized');
-  } else {
-    const user = await User.findById(post.authorId);
-    user.posts = user.posts.filter((p) => p != post._id);
-    user.save();
-    post.delete();
-    res.status(200).json({ message: 'Post deleted' });
+    throw new Error('Unauthorized');
   }
+
+  if (!postId) {
+    res.status(400);
+    throw new Error('Post ID missing');
+  }
+
+  const response = await remove(postId, userId);
+
+  if (response.error) {
+    res.status(400);
+    throw new Error(response.error);
+  }
+
+  res.status(204);
 });
 
 module.exports = {

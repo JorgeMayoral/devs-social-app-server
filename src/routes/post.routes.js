@@ -10,12 +10,19 @@ const {
   deletePost,
 } = require('./../controllers/post.controller');
 
+// Middleware
+const { protect } = require('./../middleware/auth.middleware');
+
 const router = Router();
 
 // Routes
 router.route('/all').get(getPosts);
-router.route('/:id').get(getPostById).put(updatePost).delete(deletePost);
-router.route('/:id/like').put(likePost);
-router.route('/').post(createPost);
+router
+  .route('/:id')
+  .get(getPostById)
+  .put(protect, updatePost)
+  .delete(protect, deletePost);
+router.route('/:id/like').put(protect, likePost);
+router.route('/').post(protect, createPost);
 
 module.exports = router;

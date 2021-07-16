@@ -41,6 +41,15 @@ const postSchema = new Schema(
   { timestamps: true },
 );
 
+postSchema.methods.renameId = function () {
+  let post = this.toObject();
+
+  post.id = post._id;
+  delete post._id;
+
+  return post;
+};
+
 const Post = model('Post', postSchema);
 
 module.exports = { Post };
