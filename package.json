@@ -9,13 +9,15 @@
     "start": "NODE_ENV=production node src/server.js",
     "dev": "NODE_ENV=development nodemon src/server.js",
     "test": "NODE_ENV=test PORT=5005 jest --verbose --silent",
+    "test:token": "NODE_ENV=test PORT=5005 jest --verbose --silent \"token\"",
+    "test:user": "NODE_ENV=test PORT=5005 jest --verbose --silent \"user\"",
+    "test:post": "NODE_ENV=test PORT=5005 jest --verbose --silent \"post\"",
     "test:watch": "npm test --watch",
     "mock:users": "node src/mock/mockUsers.js",
     "mock:posts": "node src/mock/mockPosts.js"
   },
   "dependencies": {
     "bcryptjs": "2.4.3",
-    "cookie-session": "1.4.0",
     "cors": "2.8.5",
     "dotenv": "10.0.0",
     "express": "4.17.1",
