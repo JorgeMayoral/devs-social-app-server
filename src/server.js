@@ -3,7 +3,6 @@ const dotenv = require('dotenv');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
-const cookieSession = require('cookie-session');
 
 // Database Configuration Import
 const connectDB = require('./config/db');
@@ -24,7 +23,6 @@ const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const MONGO_URI =
   NODE_ENV === 'test' ? process.env.MONGO_URI_TEST : process.env.MONGO_URI;
-const COOKIES_SECRET_KEY = process.env.COOKIES_SECRET_KEY;
 
 // Database Connection
 connectDB(MONGO_URI);
@@ -40,17 +38,6 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.use(cors());
-app.use(
-  cookieSession({
-    name: 'session',
-    keys: [COOKIES_SECRET_KEY],
-    maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
-    cookie: {
-      secure: true,
-      httpOnly: true,
-    },
-  }),
-);
 
 // Routes
 app.use('/api/v1/user', userRoutes);
