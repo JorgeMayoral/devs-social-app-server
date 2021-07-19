@@ -1,6 +1,6 @@
 {
   "name": "devs-social-app-server",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Server for devs social app",
   "main": "server.js",
   "author": "Jorge Mayoral Alvarez",
