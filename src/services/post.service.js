@@ -1,18 +1,13 @@
 const asyncHandler = require('express-async-handler');
 
 const { Post } = require('./../models/Post.model');
-const {
-  findUserById,
-  addPostToUser,
-  addLikedPost,
-  removePostFromUser,
-} = require('./user.service');
+const { User } = require('./../models/User.model');
 
 const addPost = asyncHandler(async (userId, postBody) => {
-  const user = await findUserById(userId);
+  const user = await User.findById(userId);
 
   if (user.error) {
-    return user;
+    return { error: 'User not found' };
   }
 
   const newPost = {
@@ -26,7 +21,9 @@ const addPost = asyncHandler(async (userId, postBody) => {
   post = post.renameId();
 
   if (post) {
-    await addPostToUser(userId, post.id);
+    user.posts.push(post.id);
+
+    await user.save();
 
     return post;
   }
@@ -53,29 +50,34 @@ const findPostById = asyncHandler(async (postId) => {
 });
 
 const like = asyncHandler(async (userId, postId) => {
-  const post = await Post.findById(postId);
+  let post = await Post.findById(postId);
 
   if (!post) {
     return { error: 'Post not found' };
   }
 
-  const user = await addLikedPost(userId, post.id);
+  const user = await User.findById(userId);
 
-  if (user.error) {
-    return { error: user.error };
+  if (!user) {
+    return { error: 'User not found' };
   }
 
-  if (post.likes.includes(userId)) {
+  if (post.likes.includes(userId) || user.likedPosts.includes(postId)) {
     // Unlike if the user already likes the post
-    post.likes = post.likes.filter((l) => !l.equals(user.id));
+    post.likes = post.likes.filter((l) => !l.equals(user._id));
+    user.likedPosts = user.likedPosts.filter((l) => !l.equals(post._id));
   } else {
     // Like if the user do not like the post
-    post.likes.push(user.id);
+    post.likes.push(user._id);
+    user.likedPosts.push(post._id);
   }
 
   post.totalLikes = post.likes.length;
 
   await post.save();
+  await user.save();
+
+  post = post.renameId();
 
   return post;
 });
@@ -111,11 +113,15 @@ const remove = asyncHandler(async (postId, userId) => {
     return { error: 'Unauthorized' };
   }
 
-  const user = await removePostFromUser(userId, postId);
+  const user = await User.findById(userId);
 
-  if (user.error) {
-    return { error: user.error };
+  if (!user) {
+    return { error: 'User not found' };
   }
+
+  user.posts = user.posts.filter((p) => !p.equals(postId));
+
+  await user.save();
 
   await post.delete();
 

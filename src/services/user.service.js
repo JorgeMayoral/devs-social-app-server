@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 
 const { User } = require('./../models/User.model');
+const { Post } = require('./../models/Post.model');
 
 const registration = asyncHandler(async (username, name, email, password) => {
   const emailExists = await User.findOne({ email });
@@ -147,7 +148,15 @@ const remove = asyncHandler(async (userId) => {
     return { error: 'User not found' };
   }
 
-  // TODO: implement delete posts from user
+  if (user.posts.length > 0) {
+    for (post in user.posts) {
+      const post = await Post.findById(postId);
+
+      if (post) {
+        await post.delete();
+      }
+    }
+  }
 
   await user.remove();
 
@@ -164,46 +173,6 @@ const profile = asyncHandler(async (userId) => {
   return user;
 });
 
-const addPostToUser = asyncHandler(async (userId, postId) => {
-  const user = await User.findById(userId);
-  user.posts.push(postId);
-  await user.save();
-});
-
-const addLikedPost = asyncHandler(async (userId, postId) => {
-  const user = await User.findById(userId);
-
-  if (!user) {
-    return { error: 'User not found' };
-  }
-
-  if (user.likedPosts.includes(postId)) {
-    // Unlike if the user already likes the post
-    user.likedPosts = user.likedPosts.filter((l) => !l.equals(postId));
-  } else {
-    // Like if the user do not like the post
-    user.likedPosts.push(postId);
-  }
-
-  await user.save();
-
-  return user;
-});
-
-const removePostFromUser = asyncHandler(async (userId, postId) => {
-  const user = await User.findById(userId);
-
-  if (!user) {
-    return { error: 'User not found' };
-  }
-
-  user.posts = user.posts.filter((p) => !p.equals(postId));
-
-  await user.save();
-
-  return user;
-});
-
 module.exports = {
   registration,
   loginUser,
@@ -213,7 +182,4 @@ module.exports = {
   update,
   remove,
   profile,
-  addPostToUser,
-  addLikedPost,
-  removePostFromUser,
 };
