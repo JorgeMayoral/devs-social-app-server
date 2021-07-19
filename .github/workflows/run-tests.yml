@@ -24,6 +24,11 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+        env:
+          PORT: 5000
+          MONGO_URI: 'mongodb://localhost:27017/app'
+          MONGO_URI_TEST: 'mongodb://localhost:27017/test'
+          JWT_SECRET_KEY: 'JWT_TEST_KEY'
 
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.6.0
