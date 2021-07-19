@@ -38,6 +38,4 @@ jobs:
           MONGO_URI: 'mongodb://localhost:27017/app'
           MONGO_URI_TEST: 'mongodb://localhost:27017/test'
           JWT_SECRET_KEY: JWT_TEST_KEY
-        run: npm test token
-        run: npm test user
-        run: npm test post
+        run: npm test token && npm test user && npm test post
