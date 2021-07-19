@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-const { server } = require('../server');
+const dotenv = require('dotenv');
+
+const connectDB = require('../config/db');
 const { User } = require('../models/User.model');
 const { initialUsers } = require('../tests/helpers');
 
@@ -12,6 +14,11 @@ const {
   update,
   remove,
 } = require('./../services/user.service');
+
+beforeAll(() => {
+  dotenv.config();
+  connectDB(process.env.MONGO_URI_TEST);
+});
 
 beforeEach(async () => {
   const user1 = new User(initialUsers[0]);
@@ -37,7 +44,7 @@ describe('users', () => {
     expect(user.username).toBe(username);
   });
 
-  test('registration return error with existing user data', async () => {
+  test('registration return error when using existing user data', async () => {
     const { username, name, email, password } = initialUsers[0];
     const data = await registration(username, name, email, password);
 
@@ -116,5 +123,4 @@ describe('users', () => {
 
 afterAll(() => {
   mongoose.connection.close();
-  server.close();
 });

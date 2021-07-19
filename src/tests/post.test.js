@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-const { server } = require('../server');
+const dotenv = require('dotenv');
+
+const connectDB = require('../config/db');
 const { Post } = require('../models/Post.model');
 const { User } = require('../models/User.model');
 const { initialUsers, initialPosts } = require('./helpers');
@@ -12,6 +14,11 @@ const {
   update,
   remove,
 } = require('../services/post.service');
+
+beforeAll(() => {
+  dotenv.config();
+  connectDB(process.env.MONGO_URI_TEST);
+});
 
 beforeEach(async () => {
   const user1 = new User(initialUsers[0]);
@@ -100,5 +107,4 @@ describe('posts', () => {
 
 afterAll(() => {
   mongoose.connection.close();
-  server.close();
 });
