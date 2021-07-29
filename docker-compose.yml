@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: 'mongodb'
+    volumes:
+      - ${PWD}/db:/data/db
+    ports:
+      - '27017:27017'
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD
+
+  backend:
+    image: ''
+    container_name: 'backend'
+    ports:
+      - '${PORT}:${PORT}'
+    expose: ${PORT}
+    restart: always
+    environment:
+      - PORT
+      - MONGO_URI
+      - JWT_SECRET_KEY
+    depends_on:
+      - mongodb

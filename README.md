@@ -39,6 +39,27 @@ Backend for the Devs Social App
   npm start
 ```
 
+### Usage with docker compose
+
+You can use the server with docker compose.
+
+To do that download the `docker-compose.yml` file and configure a `.env` file with the following environment variables:
+
+```env
+# MongoDb environment variables
+MONGO_INITDB_ROOT_USERNAME=
+MONGO_INITDB_ROOT_PASSWORD=
+
+# Backend environment variables
+PORT=
+MONGO_URI=
+JWT_SECRET_KEY=
+```
+
+Be sure to use the mongodb username and password in the `MONGO_URI` variable.
+
+Finally use `docker-compose up -d` to run the backend in detached mode.
+
 ## API Reference
 
 ### User Routes

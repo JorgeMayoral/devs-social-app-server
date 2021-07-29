@@ -1,0 +1,12 @@
+# Folders
+node_modules
+.git
+.github
+
+# Files
+.gitignore
+.env
+.env.example
+docker-compose.yml
+Dockerfile
+.dockerignore
