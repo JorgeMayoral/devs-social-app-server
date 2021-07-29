@@ -3,6 +3,9 @@ name: Publish Docker image
 on:
   push:
     branches: [main]
+    paths:
+      - 'src/'
+      - 'Dockerfile'
 
 jobs:
   push_to_registry:
