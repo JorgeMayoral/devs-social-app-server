@@ -18,7 +18,8 @@ services:
     container_name: 'backend'
     ports:
       - '${PORT}:${PORT}'
-    expose: ${PORT}
+    expose:
+      - ${PORT}
     restart: always
     environment:
       - PORT
