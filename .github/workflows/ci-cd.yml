@@ -15,8 +15,6 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    container:
-      image: node
 
     strategy:
       matrix:
