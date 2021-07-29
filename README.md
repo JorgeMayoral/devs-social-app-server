@@ -43,17 +43,23 @@ Backend for the Devs Social App
 
 You can use the server with docker compose.
 
-To do that download the `docker-compose.yml` file and configure a `.env` file with the following environment variables:
+To do that download the `docker-compose.yml` file.
+
+```bash
+wget https://raw.githubusercontent.com/JorgeMayoral/devs-social-app-server/main/docker-compose.yml -O docker-compose.yml
+```
+
+Create a `db` folder and configure a `.env` file with the following environment variables:
 
 ```env
 # MongoDb environment variables
-MONGO_INITDB_ROOT_USERNAME=
-MONGO_INITDB_ROOT_PASSWORD=
+MONGO_INITDB_ROOT_USERNAME=''
+MONGO_INITDB_ROOT_PASSWORD=''
 
 # Backend environment variables
-PORT=
-MONGO_URI=
-JWT_SECRET_KEY=
+PORT=''
+MONGO_URI='mongodb://mongodb:27017/devs-social'
+JWT_SECRET_KEY=''
 ```
 
 Be sure to use the mongodb username and password in the `MONGO_URI` variable.
