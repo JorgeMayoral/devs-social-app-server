@@ -7,7 +7,7 @@ const connectDB = require('../config/db');
 const { User } = require('../models/User.model');
 
 // Data
-const mockData = require('./mock_users.json');
+const seedData = require('./seed_users.json');
 
 async function saveUser(userData) {
   console.log(`Creating user ${userData.username}...`);
@@ -21,13 +21,13 @@ async function main() {
   dotenv.config();
   connectDB(process.env.MONGO_URI);
 
-  console.log('Mocking data...');
+  console.log('Seeding database with users...');
 
-  for (let user of mockData) {
+  for (let user of seedData) {
     await saveUser(user);
   }
 
-  console.log('All mock users has been created!');
+  console.log('All users has been created!');
 
   process.exit(0);
 }

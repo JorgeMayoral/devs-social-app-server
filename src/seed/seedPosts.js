@@ -8,8 +8,8 @@ const { Post } = require('../models/Post.model');
 const { User } = require('../models/User.model');
 
 // Data
-const postsMockData = require('./mock_posts.json');
-const usersMockData = require('./mock_users.json');
+const postsSeedData = require('./seed_posts.json');
+const usersSeedData = require('./seed_users.json');
 
 async function savePost(userData, postData) {
   console.log(`Creating post...`);
@@ -32,13 +32,13 @@ async function main() {
   dotenv.config();
   connectDB(process.env.MONGO_URI);
 
-  console.log('Mocking data...');
+  console.log('Seeding database with posts...');
 
-  for (let i = 0; i < postsMockData.length; i++) {
-    await savePost(usersMockData[i], postsMockData[i]);
+  for (let i = 0; i < postsSeedData.length; i++) {
+    await savePost(usersSeedData[i], postsSeedData[i]);
   }
 
-  console.log('All mock posts has been created!');
+  console.log('All posts has been created!');
 
   process.exit(0);
 }

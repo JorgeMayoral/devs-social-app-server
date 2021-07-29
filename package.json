@@ -13,8 +13,8 @@
     "test:user": "NODE_ENV=test PORT=5005 jest --verbose \"user\"",
     "test:post": "NODE_ENV=test PORT=5005 jest --verbose \"post\"",
     "test:watch": "npm test --watch",
-    "mock:users": "node src/mock/mockUsers.js",
-    "mock:posts": "node src/mock/mockPosts.js"
+    "seed:users": "node src/seed/seedUsers.js",
+    "seed:posts": "node src/seed/seedPosts.js"
   },
   "dependencies": {
     "bcryptjs": "2.4.3",
