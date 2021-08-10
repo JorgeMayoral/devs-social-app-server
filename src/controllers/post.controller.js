@@ -6,6 +6,7 @@ const {
   getAllPosts,
   update,
   remove,
+  getTimeline,
 } = require('../services/post.service');
 
 const { Post } = require('./../models/Post.model');
@@ -78,6 +79,26 @@ const getPostById = asyncHandler(async (req, res) => {
 
   res.status(200);
   res.json(response);
+});
+
+/**
+ * @name Timeline
+ * @description Get posts from users followed by the current logged user
+ * @access Private
+ * @route GET /api/v1/post/timeline
+ */
+const timeline = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  if (!userId) {
+    res.status(401);
+    throw new Error('Unauthorized');
+  }
+
+  const posts = await getTimeline(userId);
+
+  res.status(200);
+  res.json(posts);
 });
 
 /**
@@ -178,6 +199,7 @@ module.exports = {
   createPost,
   getPosts,
   getPostById,
+  timeline,
   likePost,
   updatePost,
   deletePost,

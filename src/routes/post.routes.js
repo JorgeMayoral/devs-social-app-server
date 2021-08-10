@@ -8,6 +8,7 @@ const {
   likePost,
   updatePost,
   deletePost,
+  timeline,
 } = require('./../controllers/post.controller');
 
 // Middleware
@@ -17,6 +18,7 @@ const router = Router();
 
 // Routes
 router.route('/all').get(getPosts);
+router.route('/timeline').get(protect, timeline);
 router
   .route('/:id')
   .get(getPostById)

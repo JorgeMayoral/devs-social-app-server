@@ -49,6 +49,23 @@ const findPostById = asyncHandler(async (postId) => {
   return { error: 'Post not found' };
 });
 
+const getTimeline = asyncHandler(async (userId) => {
+  let user = await User.findById(userId);
+
+  if (!user) {
+    return { error: 'User not found' };
+  }
+
+  let posts = [];
+
+  for (author of user.following) {
+    const post = await Post.find({ authorId: author });
+    posts.push(post);
+  }
+
+  return posts;
+});
+
 const like = asyncHandler(async (userId, postId) => {
   let post = await Post.findById(postId);
 
@@ -128,4 +145,12 @@ const remove = asyncHandler(async (postId, userId) => {
   return { message: 'Post deleted' };
 });
 
-module.exports = { addPost, getAllPosts, findPostById, like, update, remove };
+module.exports = {
+  addPost,
+  getAllPosts,
+  findPostById,
+  getTimeline,
+  like,
+  update,
+  remove,
+};
