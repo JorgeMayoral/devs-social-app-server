@@ -13,6 +13,7 @@ const {
   like,
   update,
   remove,
+  getTimeline,
 } = require('../services/post.service');
 
 beforeAll(() => {
@@ -102,6 +103,31 @@ describe('posts', () => {
 
     expect(response).toHaveProperty('message', 'Post deleted');
     expect(lengthAfterDelete).toBe(lengthBeforeDelete - 1);
+  });
+
+  test('from followed authors can be recovered by the logged user', async () => {
+    const followerUser = await User.findOne({});
+
+    const user1 = new User(initialUsers[1]);
+    const user2 = new User(initialUsers[2]);
+    const followed = await user1.save();
+    const notFollowed = await user2.save();
+
+    await addPost(followed._id, 'Post example 1');
+    await addPost(followed._id, 'Post example 2');
+    await addPost(notFollowed._id, 'Post example 3');
+
+    followerUser.following.push(followed._id);
+    followed.followers.push(followerUser._id);
+
+    await followerUser.save();
+    await followed.save();
+
+    const posts = await getTimeline(followerUser._id);
+
+    console.log(posts);
+
+    expect(posts.length).toBe(2);
   });
 });
 

@@ -13,6 +13,12 @@ const initialUsers = [
     email: 'example2@example.com',
     password: 'test1234',
   },
+  {
+    username: 'exmaple3',
+    name: 'User Example 3',
+    email: 'example3@example.com',
+    password: 'test1234',
+  },
 ];
 
 const initialPosts = [
