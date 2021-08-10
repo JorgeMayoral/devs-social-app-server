@@ -30,7 +30,7 @@ const addPost = asyncHandler(async (userId, postBody) => {
 });
 
 const getAllPosts = asyncHandler(async () => {
-  let posts = await Post.find({});
+  let posts = await Post.find({}).sort('-createdAt');
 
   posts = posts.map((post) => post.renameId());
 
