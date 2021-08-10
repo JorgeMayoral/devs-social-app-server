@@ -1,6 +1,6 @@
-[![CI/CD](https://github.com/JorgeMayoral/devs-social-app-server/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/JorgeMayoral/devs-social-app-server/actions/workflows/ci-cd.yml)
-
 # Devs Social App Server
+
+[![CI/CD](https://github.com/JorgeMayoral/devs-social-app-server/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/JorgeMayoral/devs-social-app-server/actions/workflows/ci-cd.yml)
 
 Backend for the Devs Social App
 
@@ -198,6 +198,18 @@ Return a post
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
 | `id`      | `string` | **Required**. Id of user to fetch |
+
+#### Get timeline
+
+Return the posts from the authors followed by the current logged usser
+
+```http
+  GET /api/v1/post/timeline
+```
+
+| Headers         | Type     | Description                                             | Example          |
+| :-------------- | :------- | :------------------------------------------------------ | :--------------- |
+| `Authentication`| `string` | **Required**. Valid token preceded by the word 'Bearer' | `Bearer <token>` |
 
 #### Create a post
 
