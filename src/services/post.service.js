@@ -60,7 +60,7 @@ const getTimeline = asyncHandler(async (userId) => {
 
   for (author of user.following) {
     const post = await Post.find({ authorId: author });
-    posts.push(post);
+    posts = posts.concat(post);
   }
 
   return posts;
