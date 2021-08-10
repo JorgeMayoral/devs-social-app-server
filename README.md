@@ -1,3 +1,5 @@
+[![CI/CD](https://github.com/JorgeMayoral/devs-social-app-server/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/JorgeMayoral/devs-social-app-server/actions/workflows/ci-cd.yml)
+
 # Devs Social App Server
 
 Backend for the Devs Social App
