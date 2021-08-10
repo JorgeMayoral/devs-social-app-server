@@ -4,6 +4,8 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
 
+const { version } = require('./../package.json');
+
 // Database Configuration Import
 const connectDB = require('./config/db');
 
@@ -42,6 +44,9 @@ app.use(cors());
 // Routes
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/post', postRoutes);
+
+app.use('/health', (req, res) => res.send('ok'));
+app.use('/version', (req, res) => res.send(version));
 
 // Error Handlers
 app.use(notFound);
