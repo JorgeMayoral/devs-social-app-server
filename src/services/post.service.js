@@ -63,6 +63,7 @@ const getTimeline = asyncHandler(async (userId, offset = 0, limit = 10) => {
     posts = posts.concat(post);
   }
 
+  posts = posts.map((post) => post.renameId());
   posts.sort((a, b) =>
     a.createAt > b.createdAt ? -1 : a.createdAt < b.createdAt ? 1 : 0,
   );
