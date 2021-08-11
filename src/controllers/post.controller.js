@@ -48,10 +48,13 @@ const createPost = asyncHandler(async (req, res) => {
  * @name Get Posts
  * @description Get all posts
  * @access Public
- * @route GET /api/v1/post/all
+ * @route GET /api/v1/post/all?offset=<number>&limit=<number>
  */
 const getPosts = asyncHandler(async (req, res) => {
-  const posts = await getAllPosts();
+  const limit = Number(req.query.limit) || 10;
+  const offset = Number(req.query.offset) || 0;
+
+  const posts = await getAllPosts(offset, limit);
   res.status(200);
   res.json(posts);
 });
@@ -95,7 +98,10 @@ const timeline = asyncHandler(async (req, res) => {
     throw new Error('Unauthorized');
   }
 
-  const posts = await getTimeline(userId);
+  const limit = Number(req.query.limit) || 10;
+  const offset = Number(req.query.offset) || 0;
+
+  const posts = await getTimeline(userId, offset, limit);
 
   res.status(200);
   res.json(posts);

@@ -29,8 +29,8 @@ const addPost = asyncHandler(async (userId, postBody) => {
   }
 });
 
-const getAllPosts = asyncHandler(async () => {
-  let posts = await Post.find({}).sort('-createdAt');
+const getAllPosts = asyncHandler(async (offset = 0, limit = 10) => {
+  let posts = await Post.find({}).sort('-createdAt').skip(offset).limit(limit);
 
   posts = posts.map((post) => post.renameId());
 
@@ -49,7 +49,7 @@ const findPostById = asyncHandler(async (postId) => {
   return { error: 'Post not found' };
 });
 
-const getTimeline = asyncHandler(async (userId) => {
+const getTimeline = asyncHandler(async (userId, offset = 0, limit = 10) => {
   let user = await User.findById(userId);
 
   if (!user) {
@@ -59,11 +59,22 @@ const getTimeline = asyncHandler(async (userId) => {
   let posts = [];
 
   for (author of user.following) {
-    const post = await Post.find({ authorId: author });
+    const post = await Post.find({ authorId: author }).sort('-createdAt');
     posts = posts.concat(post);
   }
 
-  return posts;
+  posts.sort((a, b) =>
+    a.createAt > b.createdAt ? -1 : a.createdAt < b.createdAt ? 1 : 0,
+  );
+
+  const response = [];
+
+  limit = offset + limit > posts.length ? posts.length : offset + limit;
+  for (let i = offset; i < offset + limit; i++) {
+    response.push(posts[i]);
+  }
+
+  return response;
 });
 
 const like = asyncHandler(async (userId, postId) => {
