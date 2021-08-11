@@ -209,6 +209,23 @@ Return a post
 | :-------- | :------- | :-------------------------------- |
 | `id`      | `string` | **Required**. Id of user to fetch |
 
+#### Get user postes
+
+Return posts from a given user
+
+```http
+  GET /api/v1/post/user/:id?offset=<number>&limit=<number>
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of user to fetch |
+
+| Query         | Type     | Default | Description                           |
+| :------------ | :------- | :------ | :------------------------------------ |
+| `offset`      | `number` | 0       | **Optional**. Number of posts to skip |
+| `limit`       | `number` | 10      | **Optional**. Limit of posts to fetch |
+
 #### Get timeline
 
 Return the posts from the authors followed by the current logged usser
