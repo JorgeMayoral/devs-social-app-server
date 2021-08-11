@@ -5,7 +5,7 @@ WORKDIR /app
 ADD package.json ./
 ADD package-lock.json ./
 
-RUN npm install
+RUN npm install --production
 
 ADD . .
 
