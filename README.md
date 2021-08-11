@@ -6,7 +6,7 @@ Backend for the Devs Social App
 
 ## TODO
 
-- [ ] Pagination for posts
+- [x] Pagination for posts
 - [ ] Commenting posts
 - [ ] Fix: test failing when running together but passing when running alone
 - [ ] Better comments in code
@@ -77,8 +77,13 @@ Finally use `docker-compose up -d` to run the backend in detached mode.
 Returns all users data without their email and password
 
 ```http
-  GET /api/v1/user/all
+  GET /api/v1/user/all?offset=<number>&limit=<number>
 ```
+
+| Query         | Type     | Default | Description                           |
+| :------------ | :------- | :------ | :------------------------------------ |
+| `offset`      | `number` | 0       | **Optional**. Number of users to skip |
+| `limit`       | `number` | 10      | **Optional**. Limit of users to fetch |
 
 #### Get user
 
@@ -184,8 +189,13 @@ The logged user starts to follow the target user (id parameter)
 Returns all posts
 
 ```http
-  GET /api/v1/post/all
+  GET /api/v1/post/all?offset=<number>&limit=<number>
 ```
+
+| Query         | Type     | Default | Description                           |
+| :------------ | :------- | :------ | :------------------------------------ |
+| `offset`      | `number` | 0       | **Optional**. Number of posts to skip |
+| `limit`       | `number` | 10      | **Optional**. Limit of posts to fetch |
 
 #### Get post
 
@@ -204,8 +214,13 @@ Return a post
 Return the posts from the authors followed by the current logged usser
 
 ```http
-  GET /api/v1/post/timeline
+  GET /api/v1/post/timeline?offset=<number>&limit=<number>
 ```
+
+| Query         | Type     | Default | Description                           |
+| :------------ | :------- | :------ | :------------------------------------ |
+| `offset`      | `number` | 0       | **Optional**. Number of users to skip |
+| `limit`       | `number` | 10      | **Optional**. Limit of users to fetch |
 
 | Headers         | Type     | Description                                             | Example          |
 | :-------------- | :------- | :------------------------------------------------------ | :--------------- |
