@@ -49,6 +49,17 @@ const findPostById = asyncHandler(async (postId) => {
   return { error: 'Post not found' };
 });
 
+const findUserPosts = asyncHandler(async (authorId, offset = 0, limit = 10) => {
+  let posts = await Post.find({ authorId })
+    .sort('-createdAt')
+    .skip(offset)
+    .limit(limit);
+
+  posts = posts.map((post) => post.renameId());
+
+  return posts;
+});
+
 const getTimeline = asyncHandler(async (userId, offset = 0, limit = 10) => {
   let user = await User.findById(userId);
 
@@ -161,6 +172,7 @@ module.exports = {
   addPost,
   getAllPosts,
   findPostById,
+  findUserPosts,
   getTimeline,
   like,
   update,

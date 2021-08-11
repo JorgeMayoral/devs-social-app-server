@@ -7,6 +7,7 @@ const {
   update,
   remove,
   getTimeline,
+  findUserPosts,
 } = require('../services/post.service');
 
 const { Post } = require('./../models/Post.model');
@@ -79,6 +80,29 @@ const getPostById = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error(response.error);
   }
+
+  res.status(200);
+  res.json(response);
+});
+
+/**
+ * @name Find user posts
+ * @description Get posts from a given user
+ * @access Public
+ * @route GET /api/v1/post/user/:id?offset=<number>&limit=<number>
+ */
+const getUserPosts = asyncHandler(async (req, res) => {
+  const limit = Number(req.query.limit) || 10;
+  const offset = Number(req.query.offset) || 0;
+
+  const authorId = req.params.id;
+
+  if (!authorId) {
+    res.status(400);
+    throw new Error('User ID missing');
+  }
+
+  const response = await findUserPosts(authorId, offset, limit);
 
   res.status(200);
   res.json(response);
@@ -205,6 +229,7 @@ module.exports = {
   createPost,
   getPosts,
   getPostById,
+  getUserPosts,
   timeline,
   likePost,
   updatePost,
