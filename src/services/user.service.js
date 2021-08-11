@@ -53,8 +53,11 @@ const loginUser = asyncHandler(async (username, password) => {
   }
 });
 
-const findAllUsers = asyncHandler(async () => {
-  let users = await User.find({}).select(['-email', '-password']);
+const findAllUsers = asyncHandler(async (offset = 0, limit = 10) => {
+  let users = await User.find({})
+    .select(['-email', '-password'])
+    .skip(offset)
+    .limit(limit);
 
   users = users.map((user) => user.renameId());
 

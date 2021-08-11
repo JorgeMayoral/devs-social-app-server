@@ -80,7 +80,10 @@ const login = asyncHandler(async (req, res) => {
  * @route GET /api/v1/user/all
  */
 const getUsers = asyncHandler(async (req, res) => {
-  const users = await findAllUsers();
+  const limit = Number(req.query.limit) || 10;
+  const offset = Number(req.query.offset) || 0;
+
+  const users = await findAllUsers(offset, limit);
   res.status(200);
   res.json(users);
 });
