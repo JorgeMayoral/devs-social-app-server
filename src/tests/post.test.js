@@ -125,8 +125,6 @@ describe('posts', () => {
 
     const posts = await getTimeline(followerUser._id);
 
-    console.log(posts);
-
     expect(posts.length).toBe(2);
   });
 });
