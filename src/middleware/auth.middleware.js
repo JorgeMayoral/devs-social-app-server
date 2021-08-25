@@ -3,6 +3,8 @@ const asyncHandler = require('express-async-handler');
 const { User } = require('./../models/User.model');
 const { validateToken } = require('./../utils/jwt');
 
+const Logger = require('../utils/logger');
+
 const protect = asyncHandler(async (req, res, next) => {
   let token;
   if (
@@ -17,7 +19,7 @@ const protect = asyncHandler(async (req, res, next) => {
 
       next();
     } catch (error) {
-      console.error(error);
+      Logger.error(error);
       res.status(401);
       throw new Error('Not authorized - Token failed.');
     }

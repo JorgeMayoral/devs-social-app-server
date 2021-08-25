@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const Logger = require('../utils/logger');
+
 const connectDB = async (mongoUri) => {
   try {
     const conn = await mongoose.connect(mongoUri, {
@@ -7,9 +9,9 @@ const connectDB = async (mongoUri) => {
       useUnifiedTopology: true,
       useCreateIndex: true,
     });
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    Logger.debug(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error(`ERROR: ${error.message}`);
+    Logger.error(`ERROR: ${error.message}`);
     process.exit(1);
   }
 };

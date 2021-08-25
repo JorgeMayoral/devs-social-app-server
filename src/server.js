@@ -11,10 +11,13 @@ const connectDB = require('./config/db');
 
 // Custom Middleware Imports
 const { notFound, errorHandler } = require('./middleware/error.middleware');
+const loggingMiddleware = require('./middleware/logging.middleware');
 
 // Route Imports
 const userRoutes = require('./routes/user.routes');
 const postRoutes = require('./routes/post.routes');
+
+const Logger = require('./utils/logger');
 
 dotenv.config();
 
@@ -32,12 +35,7 @@ connectDB(MONGO_URI);
 // Middleware
 app.use(express.json());
 app.use(helmet());
-
-if (process.env.NODE_ENV === 'production') {
-  app.use(morgan('combined'));
-} else if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
+app.use(loggingMiddleware());
 
 app.use(cors());
 
@@ -53,7 +51,7 @@ app.use(notFound);
 app.use(errorHandler);
 
 const server = app.listen(PORT, () => {
-  console.log(`Server listening in ${NODE_ENV} mode on port ${PORT}...`);
+  Logger.debug(`Server listening in ${NODE_ENV} mode on port ${PORT}...`);
 });
 
 module.exports = { app, server };
