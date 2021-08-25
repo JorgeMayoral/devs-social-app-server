@@ -61,7 +61,7 @@ services:
       - MONGO_URI
       - JWT_SECRET_KEY
     volumes:
-      - 'applogs:./logs'
+      - 'applogs:/logs'
     depends_on:
       - mongodb
       - filebeat
